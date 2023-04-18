@@ -22,7 +22,7 @@ async function handler(req: Request): Promise<Response> {
     case "POST": {
       const url = new URL(req.url);
       switch (url.pathname) {
-        case "/runner/2.2/run": {
+        case "/runner/2.2.1/run": {
           if (req.body) {
             const parameters: ExecutionRequestParameters = await req.json();
             if (!parameters.code) {
