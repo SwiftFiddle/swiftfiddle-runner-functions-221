@@ -4,14 +4,13 @@ name: Trigger auto deployment for swiftfiddle-runner-functions-221
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
+    branches: [main]
     paths:
-    - '**'
-    - '.github/workflows/swiftfiddle-runner-functions-221-AutoDeployTrigger-9b05eda3-b6d8-4bc5-af52-eedc61811eac.yml'
+      - "**"
+      - ".github/workflows/swiftfiddle-runner-functions-221-AutoDeployTrigger-9b05eda3-b6d8-4bc5-af52-eedc61811eac.yml"
 
-  # Allow mannually trigger 
-  workflow_dispatch:      
+  # Allow mannually trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -35,21 +34,19 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: swiftfiddle.azurecr.io/swiftfiddle-runner-functions-221:${{ github.sha }}
+          tags: swiftfiddle.azurecr.io/swiftfiddle-runner-functions-221:latest
           file: ./Dockerfile
           context: ./
-
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    
+
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.SWIFTFIDDLERUNNERFUNCTIONS221_AZURE_CREDENTIALS }}
-
 
       - name: Deploy to containerapp
         uses: azure/CLI@v1
@@ -57,4 +54,4 @@ jobs:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp registry set -n swiftfiddle-runner-functions-221 -g swiftfiddle --server swiftfiddle.azurecr.io --username  ${{ secrets.SWIFTFIDDLERUNNERFUNCTIONS221_REGISTRY_USERNAME }} --password ${{ secrets.SWIFTFIDDLERUNNERFUNCTIONS221_REGISTRY_PASSWORD }}
-            az containerapp update -n swiftfiddle-runner-functions-221 -g swiftfiddle --image swiftfiddle.azurecr.io/swiftfiddle-runner-functions-221:${{ github.sha }}
+            az containerapp update -n swiftfiddle-runner-functions-221 -g swiftfiddle --image swiftfiddle.azurecr.io/swiftfiddle-runner-functions-221:latest
